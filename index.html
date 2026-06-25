@@ -1266,7 +1266,7 @@ EVENTS.push(
       result:[ {who:'you', text:`지금 어른이 안 계셔서요. 문 앞에 놓아주시면 감사하겠습니다!`},
                {who:'narration', text:`상자를 문 앞에 두고 사람은 돌아갔다. 혼자 있을 땐 함부로 문을 여는 게 아니다.`} ],
       effects:{safety:3, thrill:0, memory:0, vitality:0}, flags:{noOpenDoor:true},
-      phone:{who:'보호자', emoji:'📱', msgs:[{in:true,text:`택배 왔어? 모르는 사람한테 절대 문 열어주지 말고~ 잘했어 우리 딸/아들!`}]} },
+      phone:{who:'보호자', emoji:'📱', msgs:[{in:true,text:`택배 왔어? 모르는 사람한테 절대 문 열어주지 말고~ 잘했어 우리 귀염둥이!`}]} },
     { label:`택배니까 문을 열어 직접 받는다`,
       result:[ {who:'narration', text:`다행히 진짜 택배였지만, 보호자가 나중에 이 얘기를 듣고 깜짝 놀랐다.`},
                {who:'보호자', text:`혼자 있을 땐 모르는 사람한테 문 열어주면 안 돼. 약속하자, 응?`} ],
@@ -2085,7 +2085,7 @@ const PhoneSystem = (() => {
     // 보호자가 처음 문자하면 발신자 이름을 직접 입력받는다 (가족 형태 다양성 고려)
     if(phone.who==='보호자' && !Store.s.guardianName){
       Store.s.guardianName = await UI.ask('휴대폰이 울린다. 이 문자, 누구라고 저장해 둘까?',
-        '집에서 너를 챙겨주는 사람의 이름이나 호칭을 적어줘. (예: 엄마, 아빠, 할머니, 이모…)');
+        '너를 챙겨주는 분은 누구야? (예: 엄마, 아빠, 할머니, 이모…)');
     }
     const wrap=$('phoneWrap'), bub=$('phoneBubbles');
     $('phoneAvatar').textContent = phone.emoji || '📩';
