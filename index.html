@@ -2189,7 +2189,7 @@ const Game = (() => {
 
   async function ensureFriend(){
     if(Store.s.friendName) return;
-    Store.s.friendName = await UI.ask('마침 친구에게서 연락이 왔다.<br>이번 여름 같이 놀 단짝 친구의 이름은?',
+    Store.s.friendName = await UI.ask('마침 친구에게서 연락이 왔다.\n이번 여름 같이 놀 단짝 친구의 이름은?',
       '게임 내내 이 친구가 너와 함께 다니게 돼.');
     UI.toast(`${Store.s.friendName}와(과) 함께하는 여름!`);
   }
