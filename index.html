@@ -302,20 +302,27 @@ img{ display:block; }
   opacity:0; pointer-events:none; transition:opacity .5s var(--ease); }
 .dayturn.show{ opacity:1; pointer-events:auto; }
 .diarycard{
-  width:min(440px,80%); background:linear-gradient(160deg,var(--sand),var(--sand-soft));
-  color:var(--ink); border-radius:8px; padding:34px 38px 38px;
-  box-shadow:var(--shadow-pop); position:relative;
+  /* ⬇︎ 카드 배경색은 여기서 바꾸면 됩니다 (다크 글래스). 크림 종이로 되돌리려면
+     아래 background 를 linear-gradient(160deg,var(--sand),var(--sand-soft)) 로,
+     color 를 var(--ink) 로 바꾸면 됩니다. */
+  width:min(440px,80%);
+  background:linear-gradient(160deg, rgba(34,60,84,.94), rgba(15,31,46,.96));
+  color:#eef6f8; border:1px solid rgba(255,255,255,.10);
+  border-radius:12px; padding:34px 38px 38px;
+  box-shadow:var(--shadow-pop); position:relative; overflow:hidden;
   transform:rotateY(0deg) translateY(20px) scale(.96); opacity:0;
   transition:transform .6s var(--ease), opacity .5s var(--ease);
-  /*background-image:repeating-linear-gradient(transparent, transparent 33px, rgba(20,39,56,.06) 34px);*/
 }
 .dayturn.show .diarycard{ transform:none; opacity:1; }
-.diarycard::before{ content:""; position:absolute; left:30px; top:0; bottom:0; width:2px;
-  background:rgba(255,125,94,.35); }
-.diarycard__date{ font-family:var(--font-display); font-size:1.9rem; line-height:1.1; }
-.diarycard__wx{ font-size:2.6rem; margin:10px 0 6px; }
-.diarycard__line{ font-size:1.04rem; color:#43586a; margin-top:4px; line-height:1.6; }
-.diarycard__hint{ margin-top:18px; font-family:var(--font-display); color:var(--sea); font-size:.95rem; }
+/* 일기장 줄무늬 — 오버레이(::after)로 얹어 배경색을 덮어쓰지 않게 함 */
+.diarycard::after{ content:""; position:absolute; inset:0; pointer-events:none;
+  background:repeating-linear-gradient(transparent, transparent 33px, rgba(255,255,255,.05) 34px); }
+.diarycard::before{ content:""; position:absolute; left:30px; top:0; bottom:0; width:2px; z-index:1;
+  background:rgba(255,125,94,.5); }
+.diarycard__date{ position:relative; z-index:1; font-family:var(--font-display); font-size:1.9rem; line-height:1.1; }
+.diarycard__wx{ position:relative; z-index:1; font-size:2.6rem; margin:10px 0 6px; }
+.diarycard__line{ position:relative; z-index:1; font-size:1.04rem; color:#b9cad6; margin-top:4px; line-height:1.6; }
+.diarycard__hint{ position:relative; z-index:1; margin-top:18px; font-family:var(--font-display); color:var(--aqua); font-size:.95rem; }
 
 /* 폴라로이드 추억 팝 */
 .polaroid-pop{ position:absolute; inset:0; z-index:42; display:flex; align-items:center; justify-content:center;
@@ -352,6 +359,13 @@ img{ display:block; }
   box-shadow:var(--shadow-soft); transition:transform .2s var(--ease), filter .2s; }
 .askcard__go:hover{ transform:translateY(-2px); filter:brightness(1.05); }
 .askcard__go:disabled{ filter:grayscale(.5) brightness(.9); transform:none; cursor:not-allowed; }
+/* 방학 날짜 입력(달력) */
+.datefield{ margin-top:16px; text-align:left; }
+.datefield label{ display:block; font-family:var(--font-display); font-size:.98rem; color:var(--ink); margin-bottom:6px; }
+.askcard__date{ width:100%; font-family:var(--font-body); font-size:1.05rem; color:var(--ink);
+  padding:12px 14px; border:2px solid rgba(20,39,56,.16); border-radius:14px; background:#fff; }
+.askcard__date:focus{ border-color:var(--coral); outline:none; }
+.datewarn{ min-height:20px; margin-top:10px; color:var(--coral-deep); font-size:.86rem; }
 
 /* 전체 화면(인트로/엔딩/리포트) */
 .screen{ position:absolute; inset:0; z-index:20; display:none; flex-direction:column;
@@ -389,6 +403,7 @@ img{ display:block; }
 /* 리포트 / 엔딩 카드 */
 #report{ background:radial-gradient(130% 100% at 50% 12%, #2a4a64, #0c1a28); overflow-y:auto; }
 .report{ width:min(880px,100%); display:flex; flex-direction:column; gap:18px; padding:20px 0 40px; }
+.report__period{ text-align:center; color:var(--aqua); font-family:var(--font-display); font-size:1.05rem; margin:-6px 0 18px; }
 .report__head{ font-family:var(--font-display); font-size:clamp(2rem,5vw,3rem); color:#fff;
   text-shadow:0 4px 20px rgba(0,0,0,.4); }
 .report__ending{ background:linear-gradient(140deg,var(--sand),var(--sand-soft)); color:var(--ink);
@@ -511,7 +526,7 @@ img{ display:block; }
     <!-- HUD -->
     <div class="hud" id="hud" style="display:none">
       <div class="daytab" id="daytab">
-        <div class="daytab__date" id="dtDate">7월 끝자락</div>
+        <div class="daytab__date" id="dtDate">7월 23일</div>
         <div class="daytab__sub"><span class="daytab__wx" id="dtWx">☀️</span><span id="dtWxLabel">맑음</span></div>
       </div>
       <div class="stats" id="stats">
@@ -573,7 +588,7 @@ img{ display:block; }
     <!-- 다이어리 전환 -->
     <div class="dayturn" id="dayturn">
       <div class="diarycard">
-        <div class="diarycard__date" id="diaryDate">7월의 끝자락</div>
+        <div class="diarycard__date" id="diaryDate">7월 23일 수요일</div>
         <div class="diarycard__wx" id="diaryWx">☀️</div>
         <div class="diarycard__line" id="diaryLine">방학 첫날. 오늘은 어떤 하루가 될까?</div>
         <div class="diarycard__hint" id="diaryHint">화면을 눌러 시작 ▾</div>
@@ -598,12 +613,29 @@ img{ display:block; }
       </div>
     </div>
 
+    <div class="modal" id="dateModal">
+      <div class="askcard">
+        <div class="askcard__q">우리 학교 여름방학은 언제야?</div>
+        <div class="askcard__hint">달력에서 골라줘. 네 방학 기간에 딱 맞는 여름을 만들어 줄게!</div>
+        <div class="datefield">
+          <label for="dateStart">🏖️ 방학식 (방학 시작일)</label>
+          <input type="date" id="dateStart" class="askcard__date" />
+        </div>
+        <div class="datefield">
+          <label for="dateSchool">🎒 개학식 (방학 끝, 학교 가는 날)</label>
+          <input type="date" id="dateSchool" class="askcard__date" />
+        </div>
+        <div class="datewarn" id="dateWarn"></div>
+        <button class="askcard__go" id="dateGo">이 기간으로 시작!</button>
+      </div>
+    </div>
+
     <!-- 인트로 화면 -->
     <div class="screen" id="intro">
       <div class="intro__sun"></div>
       <div class="intro__waves"></div>
       <h1 class="intro__title"><small>나의 여름방학 이야기</small>여름방학 서바이벌</h1>
-      <p class="intro__sub">7월의 끝자락, 드디어 방학이다.<br/>바다, 계곡, 캠핑, 축제…<br/>이번 여름엔 어떤 하루를 보내볼까?</p>
+      <p class="intro__sub">7월 23일, 드디어 방학이다.<br/>바다, 계곡, 캠핑, 축제…<br/>이번 여름엔 어떤 하루를 보내볼까?</p>
       <div class="intro__btns">
         <button class="btn-main" id="btnStart">방학 시작하기</button>
         <button class="btn-ghost" id="btnContinue" style="display:none">이어서 하기</button>
@@ -637,9 +669,10 @@ img{ display:block; }
    1) CONFIG · 게임 전역 설정 (튜닝 값은 모두 이곳에 모아 하드코딩 최소화)
    ═══════════════════════════════════════════════════════════════════════════ */
 const CONFIG = {
-  storageKey: 'musahan_summer_save_v1',
-  startMonth: 7, startDay: 23,        // 7월 23일 시작
-  totalDays: 12,                      // 개학까지 활동 일수 (확장 가능)
+  storageKey: 'musahan_summer_save_v2',
+  startMonth: 7, startDay: 23,        // 날짜 미입력 시 폴백 시작일 (7월 23일)
+  totalDays: 12,                      // 폴백 활동 일수
+  highlightDays: 12,                  // 방학 기간 중 실제로 플레이하는 '기억에 남는 날' 수(최대)
   vitalityMax: 100,
   vitalityLow: 25,                    // 이 아래면 열사병 등 추가 이벤트 가능
   // 이벤트 등급 목표 비중 — 일상50 / 위험징후35 / 실제사고15
@@ -675,7 +708,7 @@ const LOCATIONS = {
   beach:    { id:'beach',    name:'해수욕장', icon:'🏖️', blurb:'파도 소리와 시원한 바다',       allowedWeather:['sunny','heat','cloudy','wind'] },
   valley:   { id:'valley',   name:'계곡',     icon:'🏞️', blurb:'맑고 차가운 계곡물',           allowedWeather:['sunny','heat','cloudy'] },
   camp:     { id:'camp',     name:'캠핑장',   icon:'🏕️', blurb:'텐트와 모닥불, 별이 가득한 밤', allowedWeather:['sunny','cloudy','wind'] },
-  bike:     { id:'bike',     name:'자전거 도로',   icon:'🚲', blurb:'동네 한 바퀴 라이딩',          allowedWeather:['sunny','cloudy','wind'] },
+  bike:     { id:'bike',     name:'자전거',   icon:'🚲', blurb:'동네 한 바퀴 라이딩',          allowedWeather:['sunny','cloudy','wind'] },
   home:     { id:'home',     name:'집',       icon:'🏡', blurb:'에어컨 켜고 집에서 뒹굴기',     allowedWeather:null },
   festival: { id:'festival', name:'여름축제', icon:'🎡', blurb:'사람 많은 밤의 축제',          allowedWeather:['sunny','heat','cloudy','wind'] },
   park:     { id:'park',     name:'공원',     icon:'🌳', blurb:'가까운 공원에서 산책',          allowedWeather:['sunny','heat','cloudy','wind'] },
@@ -1266,7 +1299,7 @@ EVENTS.push(
       result:[ {who:'you', text:`지금 어른이 안 계셔서요. 문 앞에 놓아주시면 감사하겠습니다!`},
                {who:'narration', text:`상자를 문 앞에 두고 사람은 돌아갔다. 혼자 있을 땐 함부로 문을 여는 게 아니다.`} ],
       effects:{safety:3, thrill:0, memory:0, vitality:0}, flags:{noOpenDoor:true},
-      phone:{who:'보호자', emoji:'📱', msgs:[{in:true,text:`택배 왔어? 모르는 사람한테 절대 문 열어주지 말고~ 잘했어 우리 귀염둥이!`}]} },
+      phone:{who:'보호자', emoji:'📱', msgs:[{in:true,text:`택배 왔어? 모르는 사람한테 절대 문 열어주지 말고~ 잘했어 우리 딸/아들!`}]} },
     { label:`택배니까 문을 열어 직접 받는다`,
       result:[ {who:'narration', text:`다행히 진짜 택배였지만, 보호자가 나중에 이 얘기를 듣고 깜짝 놀랐다.`},
                {who:'보호자', text:`혼자 있을 땐 모르는 사람한테 문 열어주면 안 돼. 약속하자, 응?`} ],
@@ -1476,24 +1509,24 @@ EVENTS.push(
   ]
 },
 {
-  id:'festival_order', location:'festival', tier:'daily', weather:['sunny','heat','cloudy','wind'], bgm:null,
+  id:'festival_food', location:'festival', tier:'daily', weather:['sunny','heat','cloudy','wind'], bgm:null,
   image:'festival_snack.webp',
   setup:[
-    {who:'narration', text:`축제장은 사람과 불빛으로 가득하다. 솜사탕, 핫도그, 게임 부스… 어디부터 가야 할지!`},
-    {who:'friend', text:`사람 진짜 많다. 우리 떨어지면 어떡하지?`}
+    {who:'narration', text:`고소한 냄새가 코를 찌른다. 핫도그, 회오리감자, 어묵 국물… 배에서 꼬르륵 소리가 난다.`},
+    {who:'friend', text:`저 핫도그 완전 맛있겠다! 근데 줄 진짜 길다…`}
   ],
-  prompt:`인파 속, 신나기 전에 한 가지 정할 게 있다.`,
+  prompt:`인기 노점 앞, 줄이 길고 갓 튀긴 음식은 김이 펄펄 난다.`,
   choices:[
-    { label:`혹시 떨어지면 만날 장소를 먼저 정하고 신나게 논다`,
-      result:[ {who:'you', text:`우리 떨어지면 저 큰 시계탑 앞에서 만나기로 하자. 자, 이제 진짜 놀자!`},
-               {who:'narration', text:`약속을 정해두니 마음 놓고 신날 수 있었다. 솜사탕을 나눠 먹고, 게임 부스에서 인형도 하나 땄다.`},
-               {who:'friend', text:`역시 너랑 오면 든든해. 완전 재밌다!`} ],
-      effects:{safety:3, thrill:1, memory:2, vitality:-6}, flags:{setMeetPoint:true}, friendNote:'침착하게 대처',
-      memory:{cap:`축제에서 딴 분홍 토끼 인형`, emoji:'🎀'} },
-    { label:`그런 거 신경 끄고 일단 사람들 속으로 돌격`,
-      result:[ {who:'narration', text:`정신없이 놀다 잠깐 친구를 놓쳤다. 다행히 금방 다시 만났지만 가슴이 철렁했다.`},
-               {who:'friend', text:`아 깜짝이야, 너 어디 갔었어!`} ],
-      effects:{safety:0, thrill:1, memory:1, vitality:-8} }
+    { label:`줄을 서서 기다렸다가, 뜨거우니 살짝 식혀 먹는다`,
+      result:[ {who:'you', text:`새치기하면 안 되지. 기다리자. 갓 나온 거라 엄청 뜨거우니까 조금 식혀 먹어.`},
+               {who:'narration', text:`차례를 기다려 받은 핫도그는 갓 튀겨 바삭했다. 후후 불어 한 입 베어 무니 세상 꿀맛. 급하게 안 먹으니 입천장도 안 데었다.`},
+               {who:'friend', text:`오 안 뜨겁고 딱 좋다! 역시 기다린 보람 있다.`} ],
+      effects:{safety:2, thrill:1, memory:2, vitality:6}, friendNote:'침착하게 대처',
+      memory:{cap:`줄 서서 먹은 바삭 핫도그`, emoji:'🌭'} },
+    { label:`뜨거운 채로 급하게 왕창 베어 문다`,
+      result:[ {who:'narration', text:`앗 뜨거! 입천장을 데어 얼얼하다. 게다가 급하게 이것저것 먹었더니 속이 더부룩해졌다.`},
+               {who:'friend', text:`너 괜찮아? 천천히 먹지 그랬어~`} ],
+      effects:{safety:-1, thrill:1, memory:1, vitality:-4} }
   ]
 },
 {
@@ -1629,7 +1662,11 @@ const Store = (() => {
   // 새 게임의 초기 상태
   const fresh = () => ({
     playerName:'', friendName:null, guardianName:null,
-    dayIndex:0,                       // 0 = 7월 23일
+    vacationStartISO:null, schoolStartISO:null,  // 사용자가 입력한 방학식/개학식
+    dates:null,                       // 실제 플레이할 날짜 목록(ISO)
+    totalDays:CONFIG.highlightDays,   // 플레이 일수(=dates.length)
+    spanDays:0,                       // 방학 전체 길이
+    dayIndex:0,
     weather:'sunny',
     stats:{ safety:0, thrill:0, memory:0 },
     vitality:CONFIG.vitalityMax,
@@ -1681,11 +1718,42 @@ const Store = (() => {
    8) DateUtil · 7/23 부터의 날짜 계산
    ═══════════════════════════════════════════════════════════════════════════ */
 const DateUtil = {
-  for(dayIndex){
-    const d = new Date(2025, CONFIG.startMonth-1, CONFIG.startDay + dayIndex);
-    const m = d.getMonth()+1, day = d.getDate();
-    const wd = CONFIG.weekdays[d.getDay()];
+  _fmt(d){
+    const m=d.getMonth()+1, day=d.getDate(), wd=CONFIG.weekdays[d.getDay()];
     return { month:m, day, weekday:wd, short:`${m}월 ${day}일`, full:`${m}월 ${day}일 ${wd}요일` };
+  },
+  parse(iso){ const [y,m,d]=iso.split('-').map(Number); return new Date(y, m-1, d); },
+  for(dayIndex){
+    const s = Store.s;
+    // 사용자가 방학 날짜를 입력했으면 그 일정에서 해당 날짜를 사용
+    if(s.dates && s.dates[dayIndex]) return this._fmt(this.parse(s.dates[dayIndex]));
+    // 폴백: 7/23 부터 순차
+    return this._fmt(new Date(2025, CONFIG.startMonth-1, CONFIG.startDay + dayIndex));
+  }
+};
+
+/* ScheduleUtil · 방학식~개학식 기간에서 '기억에 남는 날'을 고르게 분산
+   - 첫 날 = 방학식, 마지막 날 = 개학 전날, 나머지는 그 사이에 균등 배치
+   - 방학이 짧으면 매일(기간 전체)을, 길면 highlightDays 만큼만 골라 플레이 */
+const ScheduleUtil = {
+  build(startISO, schoolISO){
+    const MS = 86400000;
+    const start = DateUtil.parse(startISO);
+    const school = DateUtil.parse(schoolISO);
+    const last = new Date(school.getTime() - MS);           // 개학 전날 = 방학 마지막 날
+    const span = Math.round((last - start)/MS) + 1;          // 방학 총 일수(방학식~개학전날, 양끝 포함)
+    const N = Math.max(1, Math.min(CONFIG.highlightDays, span));
+    const iso = (d)=> `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const set = new Set();
+    if(N===1){ set.add(iso(start)); }
+    else {
+      for(let i=0;i<N;i++){
+        const off = Math.round(i*(span-1)/(N-1));            // 0 … span-1 균등
+        set.add(iso(new Date(start.getTime() + off*MS)));
+      }
+    }
+    const dates = [...set];                                  // 이미 오름차순, 중복 제거됨
+    return { dates, span, played: dates.length, startISO, schoolISO };
   }
 };
 
@@ -2067,7 +2135,38 @@ const UI = (() => {
     });
   }
 
-  return { say, sayAll, choose, showHud, renderHud, applyAndAnimate, dayTurn, polaroid, toast, ask,
+  // ── 방학식/개학식 날짜 입력(달력) → Promise<{startISO, schoolISO}> ──
+  function askDates(){
+    return new Promise(resolve=>{
+      const m=$('dateModal'), start=$('dateStart'), school=$('dateSchool'), go=$('dateGo'), warn=$('dateWarn');
+      const yr=new Date().getFullYear();
+      start.value=`${yr}-07-21`; school.value=`${yr}-08-18`;   // 기본 예시값(바로 바꿀 수 있음)
+      m.classList.add('show');
+      function validate(){
+        if(!start.value || !school.value){ warn.textContent='두 날짜를 모두 골라줘.'; go.disabled=true; return; }
+        const s=DateUtil.parse(start.value), e=DateUtil.parse(school.value);
+        const span=Math.round((e-s)/86400000);
+        if(span<2){ warn.textContent='개학식은 방학식보다 뒤여야 해. 다시 골라줄래?'; go.disabled=true; return; }
+        warn.textContent=`이번 방학은 ${span}일! 그중 기억에 남는 날들을 함께할게 😊`;
+        go.disabled=false;
+      }
+      const submit=()=>{
+        if(go.disabled) return;
+        m.classList.remove('show');
+        start.removeEventListener('change', validate);
+        school.removeEventListener('change', validate);
+        go.removeEventListener('click', submit);
+        Sound.sfx('success');
+        resolve({ startISO:start.value, schoolISO:school.value });
+      };
+      start.addEventListener('change', validate);
+      school.addEventListener('change', validate);
+      go.addEventListener('click', submit);
+      validate();
+    });
+  }
+
+  return { say, sayAll, choose, showHud, renderHud, applyAndAnimate, dayTurn, polaroid, toast, ask, askDates,
            hideDialogue(){ dialogue.style.display='none'; nameEl.classList.remove('show'); } };
 })();
 
@@ -2085,7 +2184,7 @@ const PhoneSystem = (() => {
     // 보호자가 처음 문자하면 발신자 이름을 직접 입력받는다 (가족 형태 다양성 고려)
     if(phone.who==='보호자' && !Store.s.guardianName){
       Store.s.guardianName = await UI.ask('휴대폰이 울린다. 이 문자, 누구라고 저장해 둘까?',
-        '너를 챙겨주는 분은 누구야? (예: 엄마, 아빠, 할머니, 이모…)');
+        '집에서 너를 챙겨주는 사람의 이름이나 호칭을 적어줘. (예: 엄마, 아빠, 할머니, 이모…)');
     }
     const wrap=$('phoneWrap'), bub=$('phoneBubbles');
     $('phoneAvatar').textContent = phone.emoji || '📩';
@@ -2134,7 +2233,7 @@ const EndingSystem = (() => {
     { id:'album',    emoji:'📸', name:'추억 부자',         when:s=> s.memories.length>=12 },
     { id:'guard',    emoji:'🛡️', name:'안전 만렙',         when:s=> s.stats.safety>=18 },
     { id:'thrill',   emoji:'⚡', name:'스릴 헌터',         when:s=> s.stats.thrill>=12 },
-    { id:'every',    emoji:'🌞', name:'하루도 안 쉰 여행자', when:s=> s.visited.length>=CONFIG.totalDays }
+    { id:'every',    emoji:'🌞', name:'하루도 안 쉰 여행자', when:s=> s.visited.length>=(s.totalDays||CONFIG.totalDays) }
   ];
 
   // 엔딩 정의: 위에서부터 먼저 맞는 것 (가장 특별한 엔딩이 위)
@@ -2155,7 +2254,7 @@ const EndingSystem = (() => {
       when:(s)=> s.stats.thrill>=10 && s.stats.thrill> s.stats.safety,
       desc:'짜릿한 순간이 많았던 여름. 다만 가끔은 아슬아슬했다. 다음 여름엔 그 에너지에 ‘조금의 신중함’만 더해보자. 그럼 무적이다.' }
   ];
-  const DEFAULT = { key:'safe', title:'여름방학 서바이벌',
+  const DEFAULT = { key:'safe', title:'무사히 살아남은 여름',
     desc:'특별히 큰일은 없었지만, 그래서 더 좋았던 방학. 크고 작은 순간들을 무사히 지나, 너는 한 뼘 더 자랐다.' };
 
   function compute(){
@@ -2189,7 +2288,7 @@ const Game = (() => {
 
   async function ensureFriend(){
     if(Store.s.friendName) return;
-    Store.s.friendName = await UI.ask('마침 친구에게서 연락이 왔다.\n이번 여름 같이 놀 단짝 친구의 이름은?',
+    Store.s.friendName = await UI.ask('마침 친구에게서 연락이 왔다. 이번 여름 같이 놀 단짝 친구의 이름은?',
       '게임 내내 이 친구가 너와 함께 다니게 돼.');
     UI.toast(`${Store.s.friendName}와(과) 함께하는 여름!`);
   }
@@ -2276,7 +2375,7 @@ const Game = (() => {
   }
 
   async function runDays(){
-    while(Store.s.dayIndex < CONFIG.totalDays){
+    while(Store.s.dayIndex < (Store.s.totalDays || CONFIG.totalDays)){
       await playDay();
       Store.s.dayIndex++;
       Store.save();
@@ -2311,8 +2410,12 @@ const Game = (() => {
       ? badges.map(b=>`<span class="badge">${b.emoji} ${b.name}</span>`).join('')
       : `<span class="badge">🌱 무사히 완주</span>`;
 
+    const periodTxt = s.vacationStartISO
+      ? `${DateUtil.for(0).short} ~ ${DateUtil.for(s.totalDays-1).full} · ${s.spanDays}일간의 여름방학`
+      : `${s.totalDays}일간의 여름방학`;
     document.getElementById('reportBody').innerHTML = `
       <div class="report__head">여름방학 리포트</div>
+      <div class="report__period">${periodTxt}</div>
       <div class="report__ending">
         <h3>🏆 ${ending.title}</h3>
         <p>${ending.desc}</p>
@@ -2349,8 +2452,15 @@ const Game = (() => {
     Store.reset();
     document.getElementById('intro').classList.remove('show');
     UI.showHud();
-    Store.s.playerName = await UI.ask('여름방학이 시작됐다! 너의 이름을 알려줘', '게임 속에서 이 이름으로 불리게 돼.');
-    UI.toast(`${Store.s.playerName}의 여름방학, 시작!`);
+    Store.s.playerName = await UI.ask('여름방학이 시작됐다! 너의 이름을 알려줄래?', '게임 속에서 이 이름으로 불리게 돼.');
+    // 방학식/개학식 날짜를 받아 '내 방학 기간'에 맞춘 일정 생성
+    const picked = await UI.askDates();
+    const sched = ScheduleUtil.build(picked.startISO, picked.schoolISO);
+    Object.assign(Store.s, {
+      vacationStartISO: sched.startISO, schoolStartISO: sched.schoolISO,
+      dates: sched.dates, totalDays: sched.played, spanDays: sched.span
+    });
+    UI.toast(`${Store.s.playerName}의 ${sched.span}일 여름방학, 시작!`);
     Store.save();
     await runDays();
   }
