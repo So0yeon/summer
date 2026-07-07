@@ -2140,7 +2140,7 @@ const UI = (() => {
     return new Promise(resolve=>{
       const m=$('dateModal'), start=$('dateStart'), school=$('dateSchool'), go=$('dateGo'), warn=$('dateWarn');
       const yr=new Date().getFullYear();
-      start.value=`${yr}-07-21`; school.value=`${yr}-08-18`;   // 기본 예시값(바로 바꿀 수 있음)
+      start.value=`${yr}-07-22`; school.value=`${yr}-08-18`;   // 기본 예시값(바로 바꿀 수 있음)
       m.classList.add('show');
       function validate(){
         if(!start.value || !school.value){ warn.textContent='두 날짜를 모두 골라줘.'; go.disabled=true; return; }
